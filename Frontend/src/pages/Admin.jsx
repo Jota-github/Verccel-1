@@ -16,25 +16,54 @@ export default function Admin() {
       const response = await api.get("/work/list");
       setRecords(response.data);
     } catch (error) {
-      console.warn("⚠️ Backend offline — usando dados mockados");
+      console.warn("⚠️ Backend offline — usando lista de dados expandida");
 
-      // 🔹 DADOS MOCKADOS PARA DESENVOLVIMENTO
-      setRecords([
+      // 🔹 DADOS MOCKADOS EXPANDIDOS PARA APRESENTAÇÃO
+      const mockRecords = [
         {
           id: 1,
           employee: { name: "João Silva" },
-          checkinTime: new Date().toISOString(),
-          checkoutTime: new Date().toISOString(),
-          duration: 480,
+          checkinTime: "2026-01-18T08:00:00Z",
+          checkoutTime: "2026-01-18T17:00:00Z",
+          duration: 480, // 8h
         },
         {
           id: 2,
           employee: { name: "Maria Souza" },
-          checkinTime: new Date().toISOString(),
-          checkoutTime: null,
-          duration: null,
+          checkinTime: "2026-01-18T09:15:00Z",
+          checkoutTime: "2026-01-18T18:15:00Z",
+          duration: 480, // 8h
         },
-      ]);
+        {
+          id: 3,
+          employee: { name: "Carlos Oliveira" },
+          checkinTime: "2026-01-18T08:30:00Z",
+          checkoutTime: "2026-01-18T17:45:00Z",
+          duration: 495, // 8h 15min
+        },
+        {
+          id: 4,
+          employee: { name: "Ana Costa" },
+          checkinTime: "2026-01-17T07:50:00Z",
+          checkoutTime: "2026-01-17T16:50:00Z",
+          duration: 480,
+        },
+        {
+          id: 5,
+          employee: { name: "Abner Santos" },
+          checkinTime: "2026-01-17T10:00:00Z",
+          checkoutTime: "2026-01-17T19:00:00Z",
+          duration: 480,
+        },
+        {
+          id: 6,
+          employee: { name: "Rayssa Ramos" },
+          checkinTime: "2026-01-18T08:00:00Z",
+          checkoutTime: null, // Ainda em jornada
+          duration: null,
+        }
+      ];
+      setRecords(mockRecords);
     }
   };
 
@@ -42,7 +71,6 @@ export default function Admin() {
     fetchRecords();
   }, []);
 
-  // 🔍 Filtros locais (frontend)
   const filteredRecords = records.filter((reg) => {
     const matchesName = reg.employee?.name
       ?.toLowerCase()
@@ -57,7 +85,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-moura-blue p-4 md:p-8">
-      {/* Header */}
       <header className="bg-white rounded-xl p-4 flex justify-between items-center mb-6 shadow-lg">
         <img src="/logo-moura.png" alt="Moura" className="h-8" />
         <button
@@ -73,10 +100,9 @@ export default function Admin() {
           Painel Administrativo
         </h1>
         <p className="text-gray-500 text-sm mb-8">
-          Visualize e filtre os registros dos funcionários
+          Visualize e filtre os registros dos funcionários 
         </p>
 
-        {/* Filtros */}
         <div className="bg-gray-100 p-4 rounded-xl flex flex-wrap gap-4 items-end mb-8">
           <div className="flex-1 min-w-[200px]">
             <label className="text-xs font-bold text-gray-600 block mb-1">
@@ -109,8 +135,6 @@ export default function Admin() {
             />
           </div>
 
-          <Button className="w-auto px-8 py-2">Filtrar</Button>
-
           <button
             onClick={() => {
               setFilterName("");
@@ -122,7 +146,6 @@ export default function Admin() {
           </button>
         </div>
 
-        {/* Tabela */}
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
@@ -136,7 +159,7 @@ export default function Admin() {
 
             <tbody className="text-gray-700">
               {filteredRecords.map((reg) => (
-                <tr key={reg.id} className="border-b last:border-0">
+                <tr key={reg.id} className="border-b last:border-0 hover:bg-gray-50">
                   <td className="py-4 font-bold">
                     {reg.employee?.name || "---"}
                   </td>
