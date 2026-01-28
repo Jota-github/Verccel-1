@@ -1,30 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Card } from "../components/card";
 import { Button } from "../components/button";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { login, user } = useAuth();
+  const { loginAsAdmin, loginAsUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAdminClick = () => {
+    loginAsAdmin();
+    navigate("/admin");
+  };
 
-    const result = await login(email, password);
-    if (!result.success) {
-      alert(result.message);
-      return;
-    }
-
-    // Redirecionamento por role
-    if (user.role === "ADMIN") {
-      navigate("/admin");
-    } else {
-      navigate("/ponto");
-    }
+  const handleUserClick = () => {
+    loginAsUser();
+    navigate("/ponto");
   };
 
   return (
@@ -32,31 +23,24 @@ export default function Login() {
       <Card>
         <div className="flex flex-col items-center mb-8">
           <img src="/logo-moura.png" alt="Moura" className="h-12 mb-4" />
-          <h2 className="text-xl font-bold text-gray-800">Registros de Ponto</h2>
+          <h2 className="text-xl font-bold text-gray-800">Acesso Rápido</h2>
           <p className="text-sm text-[#003366] opacity-70">
-            Faça login para acessar o sistema
+            Selecione o perfil para acessar o sistema
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border rounded-lg p-3"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <div className="flex flex-col gap-4">
+          <Button onClick={handleAdminClick} className="w-full bg-blue-700">
+            ENTRAR COMO ADMIN
+          </Button>
 
-          <input
-            type="password"
-            placeholder="Senha"
-            className="w-full border rounded-lg p-3"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <Button type="submit">ENTRAR</Button>
-        </form>
+          <Button 
+            onClick={handleUserClick} 
+            className="w-full bg-gray-200 text-[#003366] hover:bg-gray-300"
+          >
+            ENTRAR COMO USUÁRIO
+          </Button>
+        </div>
       </Card>
     </div>
   );

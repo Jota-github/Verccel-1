@@ -3,75 +3,32 @@ import api from "../api/api";
 
 const AuthContext = createContext({});
 
-const DEV_MODE = true; // troque para false quando backend entrar
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const login = async (email, password) => {
-    // ======================
-    // 🔧 MODO DESENVOLVIMENTO
-    // ======================
-    if (DEV_MODE) {
-      // usuários fake
-      const fakeUsers = [
-        {
-          id: 1,
-          name: "Admin Moura",
-          email: "admin@moura.com",
-          password: "123456",
-          role: "ADMIN",
-          token: "fake-admin-token",
-        },
-        {
-          id: 2,
-          name: "Funcionário Moura",
-          email: "user@moura.com",
-          password: "123456",
-          role: "USER",
-          token: "fake-user-token",
-        },
-      ];
+  // Função para entrar como Admin direto
+  const loginAsAdmin = () => {
+    const adminUser = {
+      id: 1,
+      name: "Admin Moura",
+      role: "ADMIN",
+      token: "fake-admin-token",
+    };
+    setUser(adminUser);
+    // Configura o token na API caso precise buscar dados
+    api.defaults.headers.common["Authorization"] = `Bearer ${adminUser.token}`;
+  };
 
-      const foundUser = fakeUsers.find(
-        (u) => u.email === email && u.password === password
-      );
-
-      if (!foundUser) {
-        return {
-          success: false,
-          message: "Email ou senha inválidos",
-        };
-      }
-
-      setUser(foundUser);
-      return { success: true, user: foundUser };
-    }
-
-    // ======================
-    // 🚀 MODO PRODUÇÃO
-    // ======================
-    try {
-      const response = await api.post("/auth/login", {
-        email,
-        password,
-      });
-
-      setUser(response.data);
-
-      api.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.token}`;
-
-      return { success: true, user: response.data };
-    } catch (error) {
-      return {
-        success: false,
-        message:
-          error.response?.data?.message ||
-          "Erro ao realizar login",
-      };
-    }
+  // Função para entrar como Usuário direto
+  const loginAsUser = () => {
+    const normalUser = {
+      id: 2,
+      name: "Funcionário Moura",
+      role: "USER",
+      token: "fake-user-token",
+    };
+    setUser(normalUser);
+    api.defaults.headers.common["Authorization"] = `Bearer ${normalUser.token}`;
   };
 
   const logout = () => {
@@ -83,8 +40,9 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        login,
         logout,
+        loginAsAdmin,
+        loginAsUser,
         authenticated: !!user,
         isAdmin: user?.role === "ADMIN",
       }}
