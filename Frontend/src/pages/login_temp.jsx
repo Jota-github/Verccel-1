@@ -30,7 +30,7 @@ export default function Login() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <Button onClick={handleAdminClick} className="w-full bg-blue-700">
+          <Button onClick={handleAdminClick} className="w-full bg-blue-700 text-white">
             ENTRAR COMO ADMIN
           </Button>
 
